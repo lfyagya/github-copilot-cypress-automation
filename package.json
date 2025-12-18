@@ -1,0 +1,45 @@
+{
+  "name": "github-copilot-cypress-automation",
+  "version": "1.0.0",
+  "description": "Cypress automation testing framework for GitHub Copilot",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "cypress run",
+    "test:chrome": "cypress run --browser chrome",
+    "test:firefox": "cypress run --browser firefox",
+    "test:edge": "cypress run --browser edge",
+    "test:headless": "cypress run --headless",
+    "test:spec": "cypress run --spec",
+    "test:debug": "cypress run --debug",
+    "test:record": "cypress run --record",
+    "lint": "eslint cypress/**/*.js",
+    "format": "prettier --write cypress/**/*.js",
+    "pretest": "npm run lint",
+    "ci": "npm run lint && npm run cypress:run"
+  },
+  "keywords": [
+    "cypress",
+    "automation",
+    "testing",
+    "e2e",
+    "github"
+  ],
+  "author": "lfyagya",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^13.6.1",
+    "cypress-wait-until": "^2.2.2",
+    "@cypress/webpack-dev-server": "^5.9.0",
+    "@cypress/webpack-preprocessor": "^5.17.1",
+    "eslint": "^8.54.0",
+    "eslint-plugin-cypress": "^2.15.1",
+    "prettier": "^3.1.0",
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
