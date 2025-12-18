@@ -1,402 +1,377 @@
 # GitHub Copilot Cypress Automation
 
-A comprehensive test automation framework leveraging **Cypress** and **GitHub Copilot** for efficient end-to-end (E2E) testing and quality assurance automation.
+A comprehensive automation framework leveraging GitHub Copilot and Cypress for intelligent, AI-powered end-to-end testing.
 
-## Table of Contents
+## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Three-Layer Architecture](#three-layer-architecture)
+- [Documentation Links](#documentation-links)
+- [Quick Start Guide](#quick-start-guide)
 - [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
 - [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Running Tests](#running-tests)
-- [Writing Tests](#writing-tests)
-- [GitHub Copilot Integration](#github-copilot-integration)
-- [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Overview
 
-This project demonstrates a modern approach to test automation by combining the power of **Cypress**, a leading front-end testing framework, with **GitHub Copilot**, an AI-powered coding assistant. The framework is designed to streamline test development, reduce boilerplate code, and improve maintainability through intelligent code suggestions and automation best practices.
+This repository demonstrates how to integrate GitHub Copilot with Cypress to create intelligent, maintainable test automation. The framework uses AI assistance to generate test cases, suggest best practices, and streamline test development workflows.
 
-### Key Goals
+## Three-Layer Architecture
 
-- **Accelerated Test Development**: Leverage GitHub Copilot to generate test cases and helper functions
-- **Maintainability**: Use consistent patterns and page object models for easier maintenance
-- **Scalability**: Build a framework that grows with your testing needs
-- **Quality Assurance**: Comprehensive test coverage for web applications
-- **Developer Experience**: Improve productivity and reduce time-to-test
+The framework follows a modern three-layer architecture pattern for clean separation of concerns:
 
-## Features
+### 1. **Presentation Layer (UI Interactions)**
+   - Direct interaction with web elements using Cypress selectors
+   - Page Object Model (POM) implementation for UI component management
+   - Encapsulation of DOM element selectors and basic interactions
+   - **Files**: `cypress/pages/*` - Contains page object classes for different application screens
+   - **Responsibilities**: 
+     - Element selection and localization
+     - Low-level click, type, and visibility operations
+     - Page state validation through element properties
 
-✅ **End-to-End Testing** - Full user journey testing with Cypress  
-✅ **AI-Assisted Development** - GitHub Copilot integration for intelligent code suggestions  
-✅ **Page Object Model** - Organized test structure for maintainability  
-✅ **Data-Driven Tests** - Parameterized test execution with multiple datasets  
-✅ **Visual Testing** - Screenshot and visual regression capabilities  
-✅ **Reporting** - Comprehensive test reports with detailed results  
-✅ **CI/CD Integration** - Ready for GitHub Actions and other CI pipelines  
-✅ **Cross-Browser Testing** - Support for Chrome, Firefox, Edge, and more  
-✅ **Custom Commands** - Reusable Cypress commands for common operations  
-✅ **Environment Configuration** - Multi-environment support (dev, staging, prod)
+### 2. **Business Logic Layer (Test Actions)**
+   - Higher-level test operations that combine UI interactions
+   - Reusable action methods that represent user workflows
+   - Implementation of common test scenarios and user journeys
+   - **Files**: `cypress/actions/*` - Contains action classes that orchestrate UI operations
+   - **Responsibilities**:
+     - Complex user workflows (e.g., login flow, form submission)
+     - Data setup and teardown operations
+     - Business domain-specific operations
+     - Validation of business logic outcomes
 
-## Prerequisites
+### 3. **Test Specification Layer (Test Cases)**
+   - Actual test specifications and assertions
+   - Test scenarios written in Gherkin-like or traditional Cypress format
+   - End-to-end test flows that utilize business actions
+   - **Files**: `cypress/e2e/*` - Contains actual test files
+   - **Responsibilities**:
+     - Test scenario definition and orchestration
+     - High-level business flow verification
+     - Reporting and result tracking
+     - Integration with CI/CD pipelines
 
-Before you begin, ensure you have the following installed on your system:
+### Architecture Diagram
 
-- **Node.js** (v14.x or higher) - [Download](https://nodejs.org/)
-- **npm** (v6.x or higher) - Included with Node.js
-- **Git** - [Download](https://git-scm.com/)
-- **GitHub Copilot** - Available through GitHub (for VS Code or JetBrains IDEs)
-
-### Recommended Tools
-
-- **Visual Studio Code** - Recommended IDE
-- **GitHub Copilot Extension** - For AI-assisted development
-- **Cypress VS Code Extension** - For enhanced Cypress support
-
-## Installation
-
-1. **Clone the Repository**
-
-```bash
-git clone https://github.com/lfyagya/github-copilot-cypress-automation.git
-cd github-copilot-cypress-automation
+```
+┌─────────────────────────────────────────────────────┐
+│         Test Specifications (E2E Tests)             │
+│  - Test cases using business actions                │
+│  - Scenario orchestration                           │
+│  - Assertions and reporting                         │
+└────────────────────┬────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│    Business Logic Layer (Actions)                   │
+│  - User journey workflows                           │
+│  - Complex interactions coordination                │
+│  - Data validation and verification                 │
+└────────────────────┬────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│   Presentation Layer (Page Objects)                 │
+│  - Element selectors and locators                   │
+│  - Low-level UI interactions                        │
+│  - Element state management                         │
+└─────────────────────────────────────────────────────┘
 ```
 
-2. **Install Dependencies**
+## Documentation Links
 
+### Primary Documentation
+- **[SESSION_FLOW](./SESSION_FLOW.md)** - Detailed session workflow and execution flow documentation
+- **[PROMPTS](./PROMPTS.md)** - GitHub Copilot prompts and AI assistance strategies
+- **[docs/](./docs)** - Complete documentation directory with detailed guides
+
+### Additional Resources
+- [Cypress Documentation](https://docs.cypress.io)
+- [GitHub Copilot Guide](https://github.com/features/copilot)
+- [Testing Best Practices](./docs/best-practices.md)
+
+## Quick Start Guide
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+- **Node.js** (v14.x or higher)
+- **npm** (v6.x or higher)
+- **Git**
+- **GitHub Copilot** (optional but recommended)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/lfyagya/github-copilot-cypress-automation.git
+   cd github-copilot-cypress-automation
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install Cypress** (if not included in dependencies)
+   ```bash
+   npx cypress install
+   ```
+
+### Configuration
+
+1. **Environment Setup**
+   - Copy the example environment file (if exists)
+   ```bash
+   cp .env.example .env
+   ```
+   - Update `.env` with your configuration values:
+   ```
+   BASE_URL=https://your-app-url.com
+   API_BASE_URL=https://api.your-app-url.com
+   ```
+
+2. **Cypress Configuration**
+   - Review `cypress.config.js` for configuration options
+   - Adjust timeouts, viewport, and other settings as needed
+
+### Running Tests
+
+#### Open Cypress in Interactive Mode
 ```bash
-npm install
+npm run cypress:open
+```
+This opens the Cypress Test Runner where you can:
+- View available test files
+- Run individual tests
+- Debug tests in real-time
+- Record test execution
+
+#### Run All Tests Headless
+```bash
+npm run cypress:run
 ```
 
-This will install Cypress and all other required dependencies defined in `package.json`.
-
-3. **Verify Installation**
-
+#### Run Specific Test File
 ```bash
-npx cypress verify
+npm run cypress:run -- --spec cypress/e2e/login.spec.js
 ```
 
-## Project Structure
+#### Run Tests with Specific Browser
+```bash
+npm run cypress:run -- --browser chrome
+npm run cypress:run -- --browser firefox
+```
+
+#### Run Tests in Headed Mode
+```bash
+npm run cypress:run -- --headed
+```
+
+### Project Structure
 
 ```
 github-copilot-cypress-automation/
 ├── cypress/
-│   ├── fixtures/                 # Test data and fixtures
-│   │   └── sample_data.json
-│   ├── support/                  # Custom commands and helpers
-│   │   ├── commands.js           # Custom Cypress commands
-│   │   ├── helpers.js            # Helper functions
-│   │   └── e2e.js               # E2E support file
-│   ├── e2e/                      # Test specifications
-│   │   ├── login.cy.js
-│   │   ├── dashboard.cy.js
-│   │   └── user-management.cy.js
-│   ├── pages/                    # Page Object Models
+│   ├── pages/                 # Page Object Models
+│   │   ├── BasePage.js
 │   │   ├── LoginPage.js
-│   │   ├── DashboardPage.js
-│   │   └── BasePage.js
-│   └── screenshots/              # Screenshots from test runs
-├── node_modules/                 # Project dependencies
-├── cypress.config.js             # Cypress configuration
-├── package.json                  # Project metadata and dependencies
-├── package-lock.json             # Locked dependency versions
-└── README.md                      # This file
+│   │   └── DashboardPage.js
+│   ├── actions/               # Business Logic Layer
+│   │   ├── AuthActions.js
+│   │   └── UserActions.js
+│   ├── e2e/                   # Test Specifications
+│   │   ├── login.spec.js
+│   │   └── user-workflow.spec.js
+│   ├── fixtures/              # Test Data
+│   │   └── users.json
+│   ├── support/               # Support Files
+│   │   ├── commands.js
+│   │   └── e2e.js
+│   └── plugins/               # Cypress Plugins
+├── docs/                      # Documentation
+│   ├── architecture.md
+│   ├── best-practices.md
+│   └── troubleshooting.md
+├── cypress.config.js          # Cypress Configuration
+├── package.json               # Project Dependencies
+├── .env.example               # Environment Variables Template
+├── SESSION_FLOW.md            # Session Flow Documentation
+├── PROMPTS.md                 # Copilot Prompts
+└── README.md                  # This File
 ```
 
-## Getting Started
+### Writing Your First Test
 
-### 1. Open Cypress Test Runner
+1. **Create a Page Object** (`cypress/pages/MyPage.js`)
+   ```javascript
+   class MyPage {
+     getLoginButton() {
+       return cy.get('[data-testid="login-btn"]');
+     }
 
+     clickLogin() {
+       this.getLoginButton().click();
+     }
+   }
+
+   module.exports = new MyPage();
+   ```
+
+2. **Create an Action Class** (`cypress/actions/MyAction.js`)
+   ```javascript
+   const myPage = require('../pages/MyPage');
+
+   class MyAction {
+     performLogin() {
+       myPage.clickLogin();
+     }
+   }
+
+   module.exports = new MyAction();
+   ```
+
+3. **Write a Test** (`cypress/e2e/my-test.spec.js`)
+   ```javascript
+   const myAction = require('../actions/MyAction');
+
+   describe('My Test Suite', () => {
+     it('should perform login successfully', () => {
+       myAction.performLogin();
+       cy.url().should('include', '/dashboard');
+     });
+   });
+   ```
+
+### Using GitHub Copilot
+
+GitHub Copilot can accelerate test development:
+
+1. **In VS Code**: Start typing a test case and use `Ctrl+Enter` for suggestions
+2. **Prompt Examples**:
+   - "Write a Page Object for the login form"
+   - "Create a test for user registration workflow"
+   - "Generate fixtures for user test data"
+
+See [PROMPTS.md](./PROMPTS.md) for more AI prompt strategies.
+
+### Debugging Tests
+
+#### Using Cypress Debugger
 ```bash
-npx cypress open
+npm run cypress:run -- --headed --debug
 ```
 
-This opens the Cypress GUI where you can:
-- View all available test files
-- Run individual tests
-- See real-time test execution
-- Debug failing tests
-
-### 2. Run Tests in Headless Mode
-
-```bash
-npx cypress run
+#### Adding Breakpoints in Your Tests
+```javascript
+it('should perform an action', () => {
+  cy.pause(); // Execution pauses here
+  // Your test code
+});
 ```
 
-### 3. Run Specific Test Files
+#### Viewing Command Log
+- Open Cypress Test Runner
+- All executed commands appear in the Command Log panel
+- Click on any command to see the state at that point
 
-```bash
-npx cypress run --spec "cypress/e2e/login.cy.js"
-```
+## Features
 
-### 4. Run Tests in a Specific Browser
+- ✨ **AI-Powered Development** - GitHub Copilot integration for faster test creation
+- 🏗️ **Three-Layer Architecture** - Clean separation of concerns
+- 📄 **Page Object Model** - Maintainable and scalable test code
+- 🔄 **Reusable Actions** - DRY principle implementation
+- 📊 **Detailed Reporting** - Comprehensive test execution reports
+- 🌐 **Cross-Browser Testing** - Support for Chrome, Firefox, Safari, and Edge
+- ⚡ **Fast Execution** - Optimized for quick feedback
+- 🛠️ **Easy Debugging** - Built-in Cypress debugging tools
 
-```bash
-npx cypress run --browser chrome
-npx cypress run --browser firefox
-```
-
-## Running Tests
-
-### Available npm Scripts
+## Common Commands
 
 ```bash
 # Open Cypress Test Runner
 npm run cypress:open
 
-# Run all tests in headless mode
+# Run all tests headless
 npm run cypress:run
 
-# Run tests with a specific browser
-npm run cypress:chrome
-npm run cypress:firefox
+# Run tests with reporter
+npm run cypress:run -- --reporter junit
 
-# Run tests and generate reports
-npm run cypress:report
+# Generate coverage report
+npm run cypress:coverage
 
-# Run tests with specific tags
-npm run cypress:smoke
+# Lint test files
+npm run lint
 
-# Debug tests
-npm run cypress:debug
+# Format code
+npm run format
 ```
-
-### Test Execution Examples
-
-**Run all tests:**
-```bash
-npm run cypress:run
-```
-
-**Run specific test suite:**
-```bash
-npm run cypress:run -- --spec "cypress/e2e/login.cy.js"
-```
-
-**Run with specific browser:**
-```bash
-npm run cypress:run -- --browser firefox
-```
-
-**Run with viewport configuration:**
-```bash
-npx cypress run --config viewportWidth=1280,viewportHeight=720
-```
-
-## Writing Tests
-
-### Basic Test Structure
-
-```javascript
-describe('Login Page', () => {
-  beforeEach(() => {
-    cy.visit('https://app.example.com/login');
-  });
-
-  it('should display login form', () => {
-    cy.get('form').should('be.visible');
-    cy.get('input[name="email"]').should('exist');
-  });
-
-  it('should login successfully with valid credentials', () => {
-    cy.get('input[name="email"]').type('user@example.com');
-    cy.get('input[name="password"]').type('password123');
-    cy.get('button[type="submit"]').click();
-    cy.url().should('include', '/dashboard');
-  });
-});
-```
-
-### Using Page Object Model
-
-```javascript
-import LoginPage from '../pages/LoginPage';
-
-describe('Authentication', () => {
-  it('should login with valid credentials', () => {
-    const loginPage = new LoginPage();
-    loginPage.visit();
-    loginPage.login('user@example.com', 'password123');
-    cy.url().should('include', '/dashboard');
-  });
-});
-```
-
-### Data-Driven Tests
-
-```javascript
-const testData = [
-  { email: 'user1@test.com', password: 'password1' },
-  { email: 'user2@test.com', password: 'password2' },
-];
-
-testData.forEach(({ email, password }) => {
-  it(`should login with ${email}`, () => {
-    cy.login(email, password);
-    cy.url().should('include', '/dashboard');
-  });
-});
-```
-
-## GitHub Copilot Integration
-
-### How to Use GitHub Copilot for Test Development
-
-1. **Code Suggestions**: Start typing a test scenario, and Copilot will suggest completions
-2. **Helper Functions**: Describe what you need in a comment, and let Copilot generate code
-3. **Test Case Generation**: Use Copilot to expand test scenarios based on requirements
-
-### Example: Using Copilot for Test Generation
-
-```javascript
-// Type this comment and let Copilot suggest the test
-describe('User Registration', () => {
-  // TODO: Test successful user registration with valid email and password
-  
-  // Copilot will suggest:
-  it('should successfully register a new user', () => {
-    cy.visit('/register');
-    cy.get('input[name="email"]').type('newuser@test.com');
-    cy.get('input[name="password"]').type('SecurePass123!');
-    cy.get('input[name="confirmPassword"]').type('SecurePass123!');
-    cy.get('button[type="submit"]').click();
-    cy.url().should('include', '/dashboard');
-  });
-});
-```
-
-### Tips for Effective Copilot Usage
-
-- **Be Specific**: Write clear comments describing what you want to test
-- **Follow Patterns**: Maintain consistency with existing tests for better suggestions
-- **Review Suggestions**: Always review Copilot's suggestions before using them
-- **Iterative Development**: Use Copilot suggestions as a starting point and refine as needed
 
 ## Best Practices
 
-### Test Organization
+1. **Use Page Objects** - Keep selectors centralized and maintainable
+2. **Follow DRY Principle** - Create reusable action methods
+3. **Meaningful Test Names** - Write descriptive test cases
+4. **Proper Waits** - Use Cypress implicit waits effectively
+5. **Test Isolation** - Ensure tests are independent
+6. **Data Management** - Use fixtures for test data
+7. **Error Handling** - Add proper error handling in actions
 
-- **One assertion per test**: Keep tests focused and easy to maintain
-- **Descriptive test names**: Use clear, descriptive names for test cases
-- **Page Object Model**: Abstract page interactions into reusable objects
-- **DRY Principle**: Use custom commands and helpers to avoid code duplication
-
-### Selectors
-
-- **Use data attributes**: Prefer `data-testid` or similar attributes over CSS classes
-- **Avoid fragile selectors**: Don't rely on CSS properties that frequently change
-- **Chain selectors carefully**: Keep selector chains maintainable
-
-### Waits and Timeouts
-
-- **Implicit waits**: Leverage Cypress's built-in retry mechanisms
-- **Explicit waits**: Use `cy.intercept()` for network requests
-- **Avoid hardcoded delays**: Never use `cy.wait(1000)` without specific reasons
-
-### Test Data Management
-
-- **Use fixtures**: Store test data in `cypress/fixtures/` for reusability
-- **Environment variables**: Manage credentials and sensitive data securely
-- **Data isolation**: Ensure tests don't depend on each other
-
-### Reporting
-
-- **Screenshot on failure**: Automatically capture screenshots for failed tests
-- **Video recording**: Enable video recording for debugging
-- **Detailed logs**: Provide meaningful error messages and logs
+For more details, see [docs/best-practices.md](./docs/best-practices.md)
 
 ## Troubleshooting
 
-### Common Issues
+Common issues and solutions:
 
-**Issue: Tests failing intermittently**
-- Solution: Check for race conditions, increase timeouts, or use proper waits
+| Issue | Solution |
+|-------|----------|
+| Tests timing out | Increase timeout in `cypress.config.js` |
+| Element not found | Verify selector in browser DevTools |
+| Tests failing intermittently | Check for race conditions, add waits |
+| Screenshot/video not saving | Verify `screenshotOnRunFailure` in config |
 
-**Issue: Selectors not finding elements**
-- Solution: Verify selectors using browser DevTools, check for dynamic content loading
-
-**Issue: Cross-origin requests failing**
-- Solution: Configure `baseUrl` in `cypress.config.js`, use `cy.intercept()` for mocking
-
-**Issue: GitHub Copilot suggestions not appearing**
-- Solution: Ensure GitHub Copilot extension is installed and enabled, check internet connection
-
-### Debug Mode
-
-```bash
-# Run tests in debug mode
-npm run cypress:debug
-
-# Or run with specific test file
-npx cypress run --spec "cypress/e2e/login.cy.js" --debug
-```
-
-### Viewing Logs
-
-```bash
-# View detailed logs
-DEBUG=cypress:* npm run cypress:run
-
-# Export logs to file
-npm run cypress:run > test-logs.txt 2>&1
-```
+See [docs/troubleshooting.md](./docs/troubleshooting.md) for more help.
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+We welcome contributions! Please follow these steps:
 
-1. **Fork the Repository**
-2. **Create a Feature Branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. **Make Your Changes**
-4. **Commit with Clear Messages**
-   ```bash
-   git commit -m "Add descriptive commit message"
-   ```
-5. **Push to Your Fork**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-6. **Create a Pull Request** with a clear description of your changes
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### Coding Standards
+## Code Style
 
-- Follow existing code style and patterns
-- Write descriptive test names and comments
+- Use ESLint for code consistency
+- Follow the existing naming conventions
+- Write descriptive comments for complex logic
 - Ensure all tests pass before submitting a PR
-- Update documentation as needed
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
-## Resources
+## Contact & Support
 
-- [Cypress Documentation](https://docs.cypress.io/)
-- [GitHub Copilot Documentation](https://github.com/features/copilot)
-- [Page Object Model Pattern](https://www.cypress.io/blog/2020/02/12/working-with-iframes-in-cypress/)
-- [Best Practices for E2E Testing](https://docs.cypress.io/guides/references/best-practices)
-- [Cypress Best Practices](https://docs.cypress.io/guides/references/best-practices.html)
-
-## Support
-
-For issues, questions, or suggestions:
-
-- **Open an Issue**: [GitHub Issues](https://github.com/lfyagya/github-copilot-cypress-automation/issues)
-- **Discussions**: Use GitHub Discussions for questions and ideas
-- **Pull Requests**: Contributions are welcome and appreciated
+- **Issues**: [GitHub Issues](https://github.com/lfyagya/github-copilot-cypress-automation/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/lfyagya/github-copilot-cypress-automation/discussions)
+- **Author**: [lfyagya](https://github.com/lfyagya)
 
 ---
 
-**Last Updated**: December 18, 2025
+## Additional Resources
 
-**Maintained by**: [lfyagya](https://github.com/lfyagya)
+- [Cypress Best Practices](https://docs.cypress.io/guides/references/best-practices)
+- [Page Object Model Pattern](https://docs.cypress.io/guides/references/best-practices#Selecting-Elements)
+- [GitHub Copilot Tips & Tricks](https://github.blog/2023-06-20-how-to-write-better-prompts-for-github-copilot/)
+- [Test Automation Pyramid](https://martinfowler.com/bliki/TestPyramid.html)
 
-Happy Testing! 🚀
+---
+
+**Last Updated**: 2025-12-18  
+**Status**: Active Development
