@@ -1,56 +1,61 @@
-# Cypress Framework Architecture
+# Cypress Framework Architecture - Three-Layer POM Pattern
 
 ## Overview
 
-This document outlines the architecture of the Cypress automation framework, emphasizing the **Page Object Model (POM)** pattern as the core design principle for maintaining scalable, maintainable, and robust test automation.
+This document outlines the architecture of the Cypress automation framework, emphasizing the **Three-Layer Page Object Model (POM)** pattern as the core design principle for maintaining scalable, maintainable, and robust test automation.
 
 ## Table of Contents
 
-1. [Page Object Model (POM) Pattern](#page-object-model-pom-pattern)
+1. [Three-Layer Architecture](#three-layer-architecture)
 2. [Project Structure](#project-structure)
 3. [Key Components](#key-components)
 4. [Best Practices](#best-practices)
 5. [Implementation Guidelines](#implementation-guidelines)
 
-## Page Object Model (POM) Pattern
+## Three-Layer Architecture
 
-### What is POM?
+### What is the Three-Layer POM?
 
-The Page Object Model is a design pattern that creates an abstraction of web page elements and interactions. Each page is represented as a class that encapsulates:
-- Web element locators
-- Element interaction methods
-- Page-specific assertions
+This framework implements a **three-layer Page Object Model** architecture that separates concerns across:
 
-### Benefits of POM
+1. **Presentation Layer (Page Objects)** - UI element interactions
+2. **Business Logic Layer (Actions)** - Workflow orchestration
+3. **Test Layer (E2E Tests)** - Test scenarios and assertions
 
-- **Maintainability**: Centralized element locators reduce maintenance overhead
-- **Reusability**: Page objects can be reused across multiple test cases
-- **Readability**: Tests become more readable and self-documenting
-- **Scalability**: Easier to add new pages and tests as the application grows
-- **Reduced Duplication**: Eliminates repetitive code across test files
+### Benefits of Three-Layer POM
+
+- **Maintainability**: Clear separation of concerns with single responsibility per layer
+- **Reusability**: Business workflows centralized and reusable across tests
+- **Readability**: Tests read like business requirements, not technical implementations
+- **Scalability**: Easy to extend without affecting existing tests
+- **Reduced Duplication**: Business logic lives in one place (Actions layer)
 
 ## Project Structure
 
 ```
 cypress-automation/
 ├── cypress/
-│   ├── e2e/                          # End-to-end test files
-│   │   ├── login/
-│   │   ├── dashboard/
-│   │   └── checkout/
-│   ├── support/                      # Support files
+│   ├── e2e/                          # End-to-end test files (Layer 3)
+│   │   ├── authentication/
+│   │   │   └── login.spec.js
+│   │   ├── shopping/
+│   │   │   └── checkout.spec.js
+│   │   └── account/
+│   │       └── profileManagement.spec.js
+│   ├── support/
+│   │   ├── actions/                  # Business Logic Layer (Layer 2)
+│   │   │   ├── AuthenticationActions.js
+│   │   │   ├── ProductActions.js
+│   │   │   └── CartActions.js
+│   │   ├── pageObjects/              # Presentation Layer (Layer 1)
+│   │   │   ├── LoginPage.js
+│   │   │   ├── DashboardPage.js
+│   │   │   └── ProductPage.js
 │   │   ├── commands.js               # Custom Cypress commands
-│   │   ├── e2e.js                    # Global test hooks
-│   │   └── index.js
-│   ├── pages/                        # Page Object Model classes
-│   │   ├── BasePage.js               # Base page class
-│   │   ├── LoginPage.js
-│   │   ├── DashboardPage.js
-│   │   └── CheckoutPage.js
+│   │   └── e2e.js                    # Global test hooks
 │   └── fixtures/                     # Test data
 │       ├── users.json
-│       ├── products.json
-│       └── credentials.json
+│       └── products.json
 ├── cypress.config.js                 # Cypress configuration
 ├── package.json
 └── README.md
@@ -58,232 +63,348 @@ cypress-automation/
 
 ## Key Components
 
-### 1. Base Page Class
+### Layer 1: Presentation Layer (Page Objects)
 
-The `BasePage` class provides common functionality inherited by all page objects:
+Page objects encapsulate UI elements and their low-level interactions:
 
 ```javascript
-class BasePage {
-  visit(url) {
-    cy.visit(url);
+// pageObjects/LoginPage.js
+export class LoginPage {
+  // Selectors
+  usernameInput = 'input[name="username"]';
+  passwordInput = 'input[name="password"]';
+  loginButton = 'button[type="submit"]';
+  errorMessage = ".error-message";
+
+  // Low-level interaction methods
+  enterUsername(username) {
+    cy.get(this.usernameInput).type(username);
   }
 
-  getElement(selector) {
-    return cy.get(selector);
+  enterPassword(password) {
+    cy.get(this.passwordInput).type(password);
   }
 
-  clickElement(selector) {
-    cy.get(selector).click();
+  clickLoginButton() {
+    cy.get(this.loginButton).click();
   }
 
-  typeText(selector, text) {
-    cy.get(selector).type(text);
-  }
-
-  verifyElementVisible(selector) {
-    cy.get(selector).should('be.visible');
-  }
-
-  verifyElementExists(selector) {
-    cy.get(selector).should('exist');
-  }
-
-  waitForElement(selector, timeout = 5000) {
-    cy.get(selector, { timeout }).should('exist');
+  getErrorMessage() {
+    return cy.get(this.errorMessage);
   }
 }
-
-module.exports = BasePage;
 ```
 
-### 2. Specific Page Objects
+**Key Points:**
 
-Each page represents a distinct page or component in the application:
+- Define selectors for UI elements
+- Provide methods for direct element interactions
+- No business logic or assertions
+- Single responsibility: UI interaction only
 
-#### Example: LoginPage
+### Layer 2: Business Logic Layer (Actions)
+
+Actions orchestrate page objects to perform business workflows:
 
 ```javascript
-const BasePage = require('./BasePage');
+// actions/AuthenticationActions.js
+import { LoginPage } from "../pageObjects/LoginPage";
 
-class LoginPage extends BasePage {
+export class AuthenticationActions {
   constructor() {
-    super();
-    this.emailInput = 'input[name="email"]';
-    this.passwordInput = 'input[name="password"]';
-    this.loginButton = 'button[type="submit"]';
-    this.errorMessage = '.error-message';
+    this.loginPage = new LoginPage();
   }
 
-  login(email, password) {
-    this.typeText(this.emailInput, email);
-    this.typeText(this.passwordInput, password);
-    this.clickElement(this.loginButton);
+  // High-level business operation
+  loginWithValidCredentials(username, password) {
+    this.loginPage.enterUsername(username);
+    this.loginPage.enterPassword(password);
+    this.loginPage.clickLoginButton();
+    cy.url().should("include", "/dashboard");
   }
 
-  verifyLoginPageLoaded() {
-    this.verifyElementVisible(this.emailInput);
-  }
-
-  verifyErrorMessage(expectedMessage) {
-    cy.get(this.errorMessage).should('contain', expectedMessage);
+  // Handle error scenarios
+  attemptLoginWithInvalidCredentials(username, password) {
+    this.loginPage.enterUsername(username);
+    this.loginPage.enterPassword(password);
+    this.loginPage.clickLoginButton();
+    this.loginPage.getErrorMessage().should("be.visible");
   }
 }
-
-module.exports = new LoginPage();
 ```
 
-### 3. Test Files
+**Key Points:**
 
-Tests use page objects to interact with the application:
+- Combine multiple page object methods
+- Represent business operations (e.g., "login", "checkout")
+- Handle navigation and waits
+- Reusable across multiple tests
+
+### Layer 3: Test Layer (E2E Tests)
+
+Tests validate business requirements using action classes:
 
 ```javascript
-import LoginPage from '../../pages/LoginPage';
+// cypress/e2e/authentication/login.spec.js
+import { AuthenticationActions } from "../../support/actions/AuthenticationActions";
 
-describe('Login Functionality', () => {
+describe("Authentication - Login Functionality", () => {
+  let authActions;
+
   beforeEach(() => {
-    cy.visit('/login');
+    authActions = new AuthenticationActions();
+    cy.visit("/login");
   });
 
-  it('should login successfully with valid credentials', () => {
-    LoginPage.login('user@example.com', 'password123');
-    cy.url().should('include', '/dashboard');
+  it("should successfully log in with valid credentials", () => {
+    // Arrange
+    const testUser = {
+      username: "validuser@example.com",
+      password: "SecurePassword123",
+    };
+
+    // Act
+    authActions.loginWithValidCredentials(testUser.username, testUser.password);
+
+    // Assert
+    cy.url().should("include", "/dashboard");
+    cy.get(".welcome-message").should("contain", "Welcome");
   });
 
-  it('should display error for invalid credentials', () => {
-    LoginPage.login('user@example.com', 'wrongpassword');
-    LoginPage.verifyErrorMessage('Invalid credentials');
+  it("should display error message with invalid credentials", () => {
+    // Arrange
+    const invalidUser = {
+      username: "invaliduser@example.com",
+      password: "WrongPassword",
+    };
+
+    // Act
+    authActions.attemptLoginWithInvalidCredentials(
+      invalidUser.username,
+      invalidUser.password
+    );
+
+    // Assert
+    cy.get(".error-message")
+      .should("be.visible")
+      .and("contain", "Invalid credentials");
   });
 });
 ```
 
+**Key Points:**
+
+- Use action classes (no direct page object calls)
+- Follow Arrange-Act-Assert pattern
+- Read like business requirements
+- Focus on assertions and outcomes
+
 ## Best Practices
 
-### 1. Naming Conventions
+### Layer 1: Page Objects
 
-- **Page Classes**: Use descriptive names ending with "Page" (e.g., `LoginPage`, `DashboardPage`)
-- **Selectors**: Use clear, descriptive names (e.g., `loginButton`, `emailInput`)
-- **Methods**: Use action verbs (e.g., `clickLogin()`, `fillEmail()`, `submitForm()`)
+- ✅ Use descriptive selector names (e.g., `loginButton`, `emailInput`)
+- ✅ Keep methods focused and single-purpose
+- ✅ Return `cy` chains for method chaining
+- ❌ Avoid assertions in page objects
+- ❌ Don't mix multiple page concerns in one class
 
-### 2. Selector Strategy
+**Selector Strategy** (in order of preference):
 
-- **Prefer stable selectors** in this order:
-  1. `data-testid` attributes
-  2. ID attributes
-  3. Class names
-  4. CSS selectors
-  5. XPath (as a last resort)
+1. `data-testid` attributes
+2. ID attributes
+3. Class names
+4. CSS selectors
+5. XPath (last resort)
 
 ```javascript
 // Good
 this.loginButton = '[data-testid="login-submit"]';
 
 // Acceptable
-this.loginButton = '#loginBtn';
+this.loginButton = "#loginBtn";
 
 // Avoid
-this.loginButton = 'body > div > form > button:nth-child(3)';
+this.loginButton = "body > div > form > button:nth-child(3)";
 ```
 
-### 3. Method Encapsulation
+### Layer 2: Actions
 
-- Hide implementation details within page objects
-- Expose only user-facing actions and verifications
+- ✅ Name methods after business operations (e.g., `loginUser`, `addItemToCart`)
+- ✅ Combine related page object methods logically
+- ✅ Handle waits and navigation implicitly
+- ✅ Provide semantic interfaces for tests
+- ❌ Avoid making assertions (reserved for tests)
+- ❌ Don't create overly granular action methods
 
 ```javascript
-// Good: Encapsulates the steps needed to login
-login(email, password) {
-  this.typeText(this.emailInput, email);
-  this.typeText(this.passwordInput, password);
-  this.clickElement(this.loginButton);
+// Good: Business-focused method
+loginWithValidCredentials(username, password) {
+  this.loginPage.enterUsername(username);
+  this.loginPage.enterPassword(password);
+  this.loginPage.clickLoginButton();
+  cy.url().should('include', '/dashboard');
 }
 
-// Avoid: Exposing low-level interactions in tests
-cy.get('input[name="email"]').type(email);
-cy.get('input[name="password"]').type(password);
-cy.get('button[type="submit"]').click();
+// Avoid: Too granular (this belongs in page object)
+clickLoginButton() {
+  this.loginPage.clickLoginButton();
+}
 ```
 
-### 4. Separation of Concerns
+### Layer 3: Tests
 
-- Keep page objects focused on UI interactions only
-- Use custom commands for cross-cutting concerns (authentication, API calls)
+- ✅ Use Arrange-Act-Assert (AAA) pattern
+- ✅ Write one logical assertion per test
+- ✅ Use meaningful test descriptions
+- ✅ Group related tests using `describe` blocks
+- ❌ Avoid direct page object calls in tests (use actions)
+- ❌ Don't create tests with multiple independent scenarios
 
-### 5. DRY Principle
+```javascript
+// Good: Uses action class
+authActions.loginWithValidCredentials(user.username, user.password);
 
-- Avoid duplicating selectors or methods across page objects
-- Use inheritance and base classes to share common functionality
+// Avoid: Direct page object calls in tests
+loginPage.enterUsername(user.username);
+loginPage.enterPassword(user.password);
+loginPage.clickLoginButton();
+```
+
+### General Principles
+
+- **Separation of Concerns**: Each layer has a single responsibility
+- **DRY Principle**: Centralize business workflows in actions
+- **Readability**: Tests should read like business requirements
 
 ## Implementation Guidelines
 
-### Creating a New Page Object
+### Creating a New Page Object (Layer 1)
 
-1. **Extend BasePage**:
+1. **Create a new class with selectors**:
    ```javascript
-   const BasePage = require('./BasePage');
-   ```
+   // pageObjects/NewPage.js
+   export class NewPage {
+     // Define selectors
+     element1 = '[data-testid="element1"]';
+     element2 = ".element2-class";
 
-2. **Define Selectors in Constructor**:
-   ```javascript
-   constructor() {
-     super();
-     this.element1 = '[data-testid="element1"]';
-     this.element2 = '.element2-class';
+     // Low-level interaction methods
+     clickElement1() {
+       cy.get(this.element1).click();
+     }
+
+     typeInElement2(text) {
+       cy.get(this.element2).type(text);
+     }
    }
    ```
 
-3. **Implement Page-Specific Methods**:
+### Creating an Action Class (Layer 2)
+
+1. **Import page objects and create business workflows**:
+
    ```javascript
-   performAction() {
-     this.clickElement(this.element1);
-     this.verifyElementVisible(this.element2);
+   // actions/NewPageActions.js
+   import { NewPage } from "../pageObjects/NewPage";
+
+   export class NewPageActions {
+     constructor() {
+       this.newPage = new NewPage();
+     }
+
+     // Business operation combining multiple page interactions
+     performCompleteWorkflow(data) {
+       this.newPage.typeInElement2(data);
+       this.newPage.clickElement1();
+       // Handle navigation, waits, etc.
+       cy.url().should("include", "/success");
+     }
    }
    ```
 
-4. **Export as Singleton** (optional but recommended):
-   ```javascript
-   module.exports = new PageObjectClass();
-   ```
+### Writing Tests (Layer 3)
 
-### Using Page Objects in Tests
+1. **Import action class and write test specs**:
 
-1. **Import the Page Object**:
    ```javascript
-   import PageName from '../../pages/PageName';
-   ```
+   // cypress/e2e/feature/test.spec.js
+   import { NewPageActions } from "../../support/actions/NewPageActions";
 
-2. **Use High-Level Methods**:
-   ```javascript
-   it('should perform action', () => {
-     PageName.performAction();
-     cy.verify...();
+   describe("Feature Suite", () => {
+     let actions;
+
+     beforeEach(() => {
+       actions = new NewPageActions();
+       cy.visit("/page");
+     });
+
+     it("should complete workflow successfully", () => {
+       // Arrange
+       const testData = { value: "test" };
+
+       // Act
+       actions.performCompleteWorkflow(testData);
+
+       // Assert
+       cy.get(".success-message").should("be.visible");
+     });
    });
    ```
 
-3. **Chain Methods for Readability**:
-   ```javascript
-   PageName.fillForm(data)
-     .submitForm()
-     .verifySuccessMessage();
-   ```
+## Data Flow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│         Layer 3: Test Layer (E2E Tests)                 │
+│  - Orchestrates test scenarios                          │
+│  - Makes assertions on outcomes                         │
+│  - Reads like business requirements                     │
+└────────────────────┬────────────────────────────────────┘
+                     │ Uses Actions
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│    Layer 2: Business Logic Layer (Actions)              │
+│  - Combines multiple page interactions                  │
+│  - Implements business workflows                        │
+│  - Provides semantic interfaces                         │
+└────────────────────┬────────────────────────────────────┘
+                     │ Uses Page Objects
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│    Layer 1: Presentation Layer (Page Objects)           │
+│  - Direct UI element interactions                       │
+│  - Manages selectors and locators                       │
+│  - Encapsulates Cypress commands                        │
+└─────────────────────────────────────────────────────────┘
+```
 
 ## Maintenance and Updates
 
 ### When Selectors Change
 
-1. Update the selector in the page object class
-2. No changes needed in individual test files
+1. Update the selector in the **page object** class only
+2. No changes needed in actions or tests
 3. All tests automatically use the new selector
+
+### When Business Logic Changes
+
+1. Update the relevant **action** method
+2. Tests remain unchanged if the interface is the same
+3. Page objects remain unchanged
 
 ### Adding New Features
 
-1. Create new page object or extend existing ones
-2. Add new methods for new interactions
-3. Reuse in multiple test scenarios
+1. Create new **page object** for new UI elements
+2. Create **action** methods to orchestrate workflows
+3. Write **tests** using the action methods
 
 ## Conclusion
 
-The Page Object Model pattern, when properly implemented, significantly improves the maintainability and scalability of Cypress automation frameworks. By following these guidelines and best practices, you can create robust, efficient, and easy-to-maintain test automation.
+The Three-Layer Page Object Model pattern provides superior maintainability and scalability over traditional approaches. By maintaining clear separation between presentation (page objects), business logic (actions), and test specifications (tests), you create a robust framework that's easy to maintain and extend.
+
+**Key Takeaway**: Tests should never directly call page objects. Always use action classes to maintain proper separation of concerns.
 
 ---
 
-*Last Updated: 2025-12-18*
+_Last Updated: 2025-12-19_
