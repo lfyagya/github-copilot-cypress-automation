@@ -4,11 +4,11 @@ class LoginPage {
   passwordInput = '[data-test="password"]';
   loginButton = '[data-test="login-button"]';
   errorContainer = '[data-test="error"]';
-  loginLogo = '.login_logo';
+  loginLogo = ".login_logo";
 
   // Visit login page
   visit() {
-    cy.visit('https://www.saucedemo.com/');
+    cy.visit("https://www.saucedemo.com/");
   }
 
   // Enter username
@@ -35,20 +35,20 @@ class LoginPage {
 
   // Get error message
   getErrorMessage() {
-    return cy.get(this.errorContainer).invoke('text');
+    return cy.get(this.errorContainer).invoke("text");
   }
 
   // Verify error message is displayed
   verifyErrorMessageDisplayed() {
-    cy.get(this.errorContainer).should('be.visible');
+    cy.get(this.errorContainer).should("be.visible");
   }
 
   // Verify login page is loaded
   verifyLoginPageLoaded() {
-    cy.get(this.loginLogo).should('be.visible');
-    cy.get(this.usernameInput).should('be.visible');
-    cy.get(this.passwordInput).should('be.visible');
-    cy.get(this.loginButton).should('be.visible');
+    cy.get(this.loginLogo).should("be.visible");
+    cy.get(this.usernameInput).should("be.visible");
+    cy.get(this.passwordInput).should("be.visible");
+    cy.get(this.loginButton).should("be.visible");
   }
 
   // Clear username field
@@ -62,4 +62,4 @@ class LoginPage {
   }
 }
 
-export default new LoginPage();
+export default LoginPage;

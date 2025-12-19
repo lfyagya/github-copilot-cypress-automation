@@ -1,95 +1,80 @@
-import DashboardPage from '../pages/DashboardPage';
-import LoginPage from '../pages/LoginPage';
+import LoginPage from "../pages/LoginPage";
+import InventoryPage from "../pages/InventoryPage";
 
-describe('Product Tests', () => {
+describe("Product E2E Tests", () => {
+  let loginPage;
+  let inventoryPage;
+
+  before(() => {
+    loginPage = new LoginPage();
+    inventoryPage = new InventoryPage();
+  });
+
   beforeEach(() => {
-    LoginPage.visit();
-    LoginPage.login('standard_user', 'secret_sauce');
-    DashboardPage.verifyDashboardLoaded();
+    loginPage.visit();
+    cy.fixture("users").then((users) => {
+      loginPage.login(users.validUser.username, users.validUser.password);
+    });
+    inventoryPage.verifyInventoryPageLoaded();
   });
 
-  describe('Product Listing', () => {
-    it('should display product list', () => {
-      DashboardPage.verifyProductListVisible();
-      DashboardPage.verifyProductCountGreaterThan(0);
-    });
-
-    it('should display product info', () => {
-      DashboardPage.verifyFirstProductHasName();
-      DashboardPage.verifyFirstProductHasPrice();
-      DashboardPage.verifyFirstProductHasDescription();
-    });
-
-    it('should display product images', () => {
-      DashboardPage.verifyFirstProductImageVisible();
-    });
+  it("Should display all products on inventory page", () => {
+    inventoryPage.verifyProductCount(6);
+    inventoryPage.verifyAllProductsHaveNames();
+    inventoryPage.verifyAllProductsHavePrices();
   });
 
-  describe('Product Sorting', () => {
-    it('should sort by price ascending', () => {
-      DashboardPage.sortByPriceAscending();
-      DashboardPage.verifySortedByPriceAscending();
-    });
+  it("Should add product to cart and update cart badge", () => {
+    inventoryPage.verifyCartBadgeNotExists();
 
-    it('should sort by price descending', () => {
-      DashboardPage.sortByPriceDescending();
-      DashboardPage.verifySortedByPriceDescending();
-    });
+    inventoryPage.addFirstProductToCart();
 
-    it('should sort by name alphabetically', () => {
-      DashboardPage.sortByNameAscending();
-      DashboardPage.verifySortedByNameAscending();
-    });
+    inventoryPage.verifyCartBadgeCount("1");
+    inventoryPage.verifyButtonTextChanged("Remove");
   });
 
-  describe('Add to Cart', () => {
-    it('should add product to cart', () => {
-      DashboardPage.addFirstProductToCart();
-      DashboardPage.verifyCartNotificationVisible();
-    });
+  it("Should navigate to product details page", () => {
+    inventoryPage.clickFirstProductName();
 
-    it('should update cart count', () => {
-      const count = DashboardPage.getCartCount();
-      DashboardPage.addFirstProductToCart();
-      DashboardPage.verifyCartCountIncremented(count);
-    });
+    inventoryPage.verifyProductDetailPageLoaded();
   });
 
-  describe('Product Details', () => {
-    it('should navigate to product detail', () => {
-      DashboardPage.clickFirstProduct();
-      DashboardPage.verifyProductDetailPageLoaded();
-    });
+  it("Should sort products by price low to high", () => {
+    inventoryPage.sortProducts("lohi");
 
-    it('should display complete info', () => {
-      DashboardPage.clickFirstProduct();
-      DashboardPage.verifyProductNameVisible();
-      DashboardPage.verifyProductPriceVisible();
-    });
+    inventoryPage.verifyPricesSortedAscending();
   });
 
-  describe('Product Filtering', () => {
-    it('should filter by search term', () => {
-      DashboardPage.searchForProduct('backpack');
-      DashboardPage.verifyProductsContainSearchTerm('backpack');
-    });
+  it("Should sort products by name Z to A", () => {
+    inventoryPage.sortProducts("za");
+
+    inventoryPage.verifyNamesSortedDescending();
   });
 
-  describe('Product Availability', () => {
-    it('should disable out of stock products', () => {
-      DashboardPage.verifyOutOfStockProductsDisabled();
-    });
+  it("Should add multiple products to cart", () => {
+    inventoryPage.addProductToCartByIndex(0);
+    inventoryPage.addProductToCartByIndex(1);
+    inventoryPage.addProductToCartByIndex(2);
 
-    it('should enable in stock products', () => {
-      DashboardPage.verifyInStockProductsEnabled();
-    });
+    inventoryPage.verifyCartBadgeCount("3");
   });
 
-  describe('Error Handling', () => {
-    it('should show error if load fails', () => {
-      DashboardPage.interceptProductsWithError(500);
-      DashboardPage.reloadPage();
-      DashboardPage.verifyErrorMessageVisible();
-    });
+  it("Should remove product from cart on inventory page", () => {
+    inventoryPage.addFirstProductToCart();
+    inventoryPage.verifyCartBadgeCount("1");
+
+    inventoryPage.removeFirstProductFromCart();
+
+    inventoryPage.verifyCartBadgeNotExists();
+    inventoryPage.verifyButtonTextChanged("Add to cart");
+  });
+
+  it("Should navigate to cart page with added products", () => {
+    inventoryPage.addProductToCartByIndex(0);
+    inventoryPage.addProductToCartByIndex(1);
+
+    inventoryPage.clickShoppingCart();
+
+    inventoryPage.verifyCartPageLoaded(2);
   });
 });

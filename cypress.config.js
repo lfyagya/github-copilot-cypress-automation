@@ -1,8 +1,8 @@
-const { defineConfig } = require('cypress');
+const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   // Project ID for Cypress Dashboard (optional)
-  projectId: 'your_project_id',
+  projectId: "your_project_id",
 
   // Timeouts
   defaultCommandTimeout: 5000,
@@ -13,7 +13,6 @@ module.exports = defineConfig({
   taskTimeout: 60000,
 
   // Test configuration
-  testIsolation: true,
   numTestsKeptInMemory: 25,
 
   // Viewport configuration
@@ -31,45 +30,39 @@ module.exports = defineConfig({
   videoCompression: 32,
   videoUploadOnPasses: false,
   screenshotOnRunFailure: true,
-  screenshotsFolder: 'cypress/screenshots',
-  videosFolder: 'cypress/videos',
+  screenshotsFolder: "cypress/screenshots",
+  videosFolder: "cypress/videos",
 
   // Download folder
-  downloadsFolder: 'cypress/downloads',
-
-  // Support file
-  supportFile: 'cypress/support/e2e.js',
-
-  // Spec file configuration
-  specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+  downloadsFolder: "cypress/downloads",
 
   // Reporter configuration
-  reporter: 'mochawesome',
+  reporter: "mochawesome",
   reporterOptions: {
-    reportDir: 'cypress/reports/mochawesome',
+    reportDir: "cypress/reports/mochawesome",
     overwrite: false,
     html: true,
     json: true,
-    timestamp: 'yyyy-mm-dd_HH-MM-ss',
+    timestamp: "yyyy-mm-dd_HH-MM-ss",
   },
 
   // Environment variables
   env: {
-    baseUrl: 'http://localhost:3000',
-    apiUrl: 'http://localhost:3000/api',
+    baseUrl: "http://localhost:3000",
+    apiUrl: "http://localhost:3000/api",
     apiTimeout: 10000,
     hideCredentials: true,
   },
 
   // Browser configuration
-  browser: 'chrome',
+  browser: "chrome",
   chromeWebSecurity: false,
-  
+
   // Only affects headless mode
   headless: true,
 
   // Node version
-  nodeVersion: 'default',
+  nodeVersion: "default",
 
   // Waiting for animations/transitions
   animationDistanceThreshold: 5,
@@ -85,25 +78,27 @@ module.exports = defineConfig({
   unhandledRejection: true,
 
   // Scroll behavior
-  scrollBehavior: 'top',
+  scrollBehavior: "top",
 
   // Component testing configuration (if needed)
   component: {
+    testIsolation: true,
     devServer: {
-      framework: 'react',
-      bundler: 'webpack',
+      framework: "react",
+      bundler: "webpack",
     },
-    specPattern: 'cypress/component/**/*.cy.{js,jsx,ts,tsx}',
-    supportFile: 'cypress/support/component.js',
+    specPattern: "cypress/component/**/*.cy.{js,jsx,ts,tsx}",
+    supportFile: "cypress/support/component.js",
   },
 
   // E2E testing configuration
   e2e: {
-    baseUrl: 'http://localhost:3000',
-    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
-    supportFile: 'cypress/support/e2e.js',
-    excludeSpecPattern: '*.hot-update.js',
-    
+    testIsolation: true,
+    baseUrl: "https://www.saucedemo.com",
+    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
+    supportFile: "cypress/support/e2e.js",
+    excludeSpecPattern: "*.hot-update.js",
+
     // Setup node events
     setupNodeEvents(on, config) {
       // Example: Register plugins here
@@ -121,7 +116,7 @@ module.exports = defineConfig({
 
   // Logging
   logging: true,
-  logLevel: 'info',
+  logLevel: "info",
 
   // Request/Response handling
   responseTimeout: 5000,
